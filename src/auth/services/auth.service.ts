@@ -14,80 +14,80 @@ import { GoogleService } from './google.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly authRepository: AuthRepository,
-    private readonly jwtService: JwtService,
-    private readonly kakaoService: KakaoService,
-    private readonly googleService: GoogleService,
-  ) {}
+    constructor(
+        private readonly authRepository: AuthRepository,
+        private readonly jwtService: JwtService,
+        private readonly kakaoService: KakaoService,
+        private readonly googleService: GoogleService,
+    ) {}
 
-  async validateEmail(emailInput: string, passwordInput: string): Promise<AuthUserType> {
-    const userInfo = await this.authRepository.getUserByEmail(emailInput);
-    if (!userInfo) throw new UnauthorizedException();
+    async validateEmail(emailInput: string, passwordInput: string): Promise<AuthUserType> {
+        const userInfo = await this.authRepository.getUserByEmail(emailInput);
+        if (!userInfo) throw new UnauthorizedException();
 
-    validateUserStatus(userInfo.userStatus);
+        validateUserStatus(userInfo.userStatus);
 
-    const [salt, password] = userInfo.password?.split('.');
-    const hash = crypto.pbkdf2Sync(passwordInput, salt, 1000, 64, 'sha512').toString('hex');
+        const [salt, password] = userInfo.password?.split('.');
+        const hash = crypto.pbkdf2Sync(passwordInput, salt, 1000, 64, 'sha512').toString('hex');
 
-    if (!salt || !password || password !== hash) throw new UnauthorizedException();
+        if (!salt || !password || password !== hash) throw new UnauthorizedException();
 
-    return userInfo;
-  }
-
-  async loginAfterValidate({ userId }: AuthUserType): Promise<EmailLoginResponseDto> {
-    const accessToken = await this.createAccessToken({ userId });
-
-    return { accessToken };
-  }
-
-  async authKakao({ code, redirectUri }: KakaoLoginDto): Promise<KakaoLoginResponseDto> {
-    const payload = await this.kakaoService.getSocialPayload({ code, redirectUri });
-
-    return this.authSocial(payload);
-  }
-
-  async authGoogle({ token }: GoogleLoginDto): Promise<GoogleLoginResponseDto> {
-    const payload = await this.googleService.getSocialPayload({ token });
-
-    return this.authSocial(payload);
-  }
-
-  private async authSocial(payload: SocialLoginPayloadType): Promise<SocialLoginResponseDto> {
-    const userInfo = await this.authRepository.getUserBySocialKey(payload.socialType, payload.socialKey);
-
-    if (userInfo) {
-      validateUserStatus(userInfo.userStatus);
-
-      const accessToken = await this.createAccessToken(userInfo);
-
-      return { isNewUser: false, accessToken };
-    } else {
-      const userSocialId = await this.saveSocial(payload);
-
-      return { isNewUser: true, userSocialId };
+        return userInfo;
     }
-  }
 
-  private async createAccessToken({ userId }: any): Promise<string> {
-    return this.jwtService.signAsync({ userId });
-  }
+    async loginAfterValidate({ userId }: AuthUserType): Promise<EmailLoginResponseDto> {
+        const accessToken = await this.createAccessToken({ userId });
 
-  private async saveSocial({ socialType, socialKey, payload }: SocialLoginPayloadType): Promise<number> {
-    const { userSocialId } = (await this.authRepository.getUserSocialBySocialKey(socialType, socialKey)) ?? {};
+        return { accessToken };
+    }
 
-    const userSocialInfo = await this.authRepository.saveUserSocial(
-      Object.assign(
-        {
-          socialType,
-          socialKey,
-          payload,
-        },
-        userSocialId ? { userSocialId } : null,
-      ),
-    );
-    if (!userSocialInfo) throw new BadRequestException('DB Error [social].');
+    async authKakao({ code, redirectUri }: KakaoLoginDto): Promise<KakaoLoginResponseDto> {
+        const payload = await this.kakaoService.getSocialPayload({ code, redirectUri });
 
-    return userSocialInfo.userSocialId;
-  }
+        return this.authSocial(payload);
+    }
+
+    async authGoogle({ token }: GoogleLoginDto): Promise<GoogleLoginResponseDto> {
+        const payload = await this.googleService.getSocialPayload({ token });
+
+        return this.authSocial(payload);
+    }
+
+    private async authSocial(payload: SocialLoginPayloadType): Promise<SocialLoginResponseDto> {
+        const userInfo = await this.authRepository.getUserBySocialKey(payload.socialType, payload.socialKey);
+
+        if (userInfo) {
+            validateUserStatus(userInfo.userStatus);
+
+            const accessToken = await this.createAccessToken(userInfo);
+
+            return { isNewUser: false, accessToken };
+        } else {
+            const userSocialId = await this.saveSocial(payload);
+
+            return { isNewUser: true, userSocialId };
+        }
+    }
+
+    private async createAccessToken({ userId }: any): Promise<string> {
+        return this.jwtService.signAsync({ userId });
+    }
+
+    private async saveSocial({ socialType, socialKey, payload }: SocialLoginPayloadType): Promise<number> {
+        const { userSocialId } = (await this.authRepository.getUserSocialBySocialKey(socialType, socialKey)) ?? {};
+
+        const userSocialInfo = await this.authRepository.saveUserSocial(
+            Object.assign(
+                {
+                    socialType,
+                    socialKey,
+                    payload,
+                },
+                userSocialId ? { userSocialId } : null,
+            ),
+        );
+        if (!userSocialInfo) throw new BadRequestException('DB Error [social].');
+
+        return userSocialInfo.userSocialId;
+    }
 }

@@ -9,19 +9,19 @@ import { UsersMeResponseDto } from '../dto/users-me.dto';
 @ApiTags('User')
 @Controller('/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: '회원 가입 (소셜 로그인)' })
-  @Post('/by-social')
-  async createUserBySocial(@Body() body: CreateUserBySocialDto): Promise<void> {
-    return this.usersService.createUserBySocial(body);
-  }
+    @ApiOperation({ summary: '회원 가입 (소셜 로그인)' })
+    @Post('/by-social')
+    async createUserBySocial(@Body() body: CreateUserBySocialDto): Promise<void> {
+        return this.usersService.createUserBySocial(body);
+    }
 
-  @ApiOperation({ summary: '내 정보' })
-  @ApiResponse({ type: UsersMeResponseDto })
-  @UseGuards(JwtAuthGuard)
-  @Get('/me')
-  async getMe(@AuthUser() authUser: AuthUserType): Promise<UsersMeResponseDto> {
-    return this.usersService.getMe(authUser);
-  }
+    @ApiOperation({ summary: '내 정보' })
+    @ApiResponse({ type: UsersMeResponseDto })
+    @UseGuards(JwtAuthGuard)
+    @Get('/me')
+    async getMe(@AuthUser() authUser: AuthUserType): Promise<UsersMeResponseDto> {
+        return this.usersService.getMe(authUser);
+    }
 }

@@ -1,4 +1,4 @@
 export enum SOCIAL_TYPE {
-  GOOGLE = 'google',
-  KAKAO = 'kakao',
+    GOOGLE = 'google',
+    KAKAO = 'kakao',
 }

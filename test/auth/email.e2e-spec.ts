@@ -7,43 +7,43 @@ import { createTestingApp } from '../_utils/create-testing-app';
 import { UserEntity } from '../../src/auth/repository/entities/user.entity';
 
 describe('AuthModule (e2e) - email', () => {
-  let app: INestApplication;
-  let dataSource: DataSource;
-  const userIdSet = new Set<number>();
+    let app: INestApplication;
+    let dataSource: DataSource;
+    const userIdSet = new Set<number>();
 
-  beforeAll(async () => {
-    app = await createTestingApp();
-
-    dataSource = app.get(DataSource);
-  });
-
-  describe('POST /api/auth/email', () => {
     beforeAll(async () => {
-      const salt = crypto.randomBytes(16).toString('hex');
-      const hash = crypto.pbkdf2Sync('123456', salt, 1000, 64, 'sha512').toString('hex');
+        app = await createTestingApp();
 
-      const userInfo = await dataSource.getRepository(UserEntity).save({ email: 'iu@example.com', password: salt + '.' + hash });
-      userIdSet.add(userInfo.userId);
+        dataSource = app.get(DataSource);
     });
 
-    it('이메일 로그인', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/email')
-        .send({ username: 'iu@example.com', password: '123456' })
-        .expect(HttpStatus.CREATED);
+    describe('POST /api/auth/email', () => {
+        beforeAll(async () => {
+            const salt = crypto.randomBytes(16).toString('hex');
+            const hash = crypto.pbkdf2Sync('123456', salt, 1000, 64, 'sha512').toString('hex');
 
-      expect(res.body).toHaveProperty('accessToken');
+            const userInfo = await dataSource.getRepository(UserEntity).save({ email: 'iu@example.com', password: salt + '.' + hash });
+            userIdSet.add(userInfo.userId);
+        });
 
-      const { accessToken } = res.body;
-      const { userId } = new JwtService().verify(accessToken, { secret: process.env.JWT_SECRET });
+        it('이메일 로그인', async () => {
+            const res = await request(app.getHttpServer())
+                .post('/api/auth/email')
+                .send({ username: 'iu@example.com', password: '123456' })
+                .expect(HttpStatus.CREATED);
 
-      expect(userId).toEqual(userIdSet.values().next().value);
+            expect(res.body).toHaveProperty('accessToken');
+
+            const { accessToken } = res.body;
+            const { userId } = new JwtService().verify(accessToken, { secret: process.env.JWT_SECRET });
+
+            expect(userId).toEqual(userIdSet.values().next().value);
+        });
     });
-  });
 
-  afterAll(async () => {
-    await dataSource.getRepository(UserEntity).delete({ userId: In([...userIdSet]) });
+    afterAll(async () => {
+        await dataSource.getRepository(UserEntity).delete({ userId: In([...userIdSet]) });
 
-    await app.close();
-  });
+        await app.close();
+    });
 });
