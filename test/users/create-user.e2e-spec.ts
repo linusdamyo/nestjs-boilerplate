@@ -7,73 +7,73 @@ import { createTestingApp } from '../_utils/create-testing-app';
 import { SOCIAL_TYPE } from '../../src/_enum/type.enum';
 
 describe('UsersModule (e2e) - /users', () => {
-  let app: INestApplication;
-  let dataSource: DataSource;
-  const userIdSet = new Set<number>();
-
-  beforeAll(async () => {
-    app = await createTestingApp();
-
-    dataSource = app.get(DataSource);
-  });
-
-  describe('POST /api/users/by-social', () => {
-    let userSocialInfo: UserSocialEntity;
+    let app: INestApplication;
+    let dataSource: DataSource;
+    const userIdSet = new Set<number>();
 
     beforeAll(async () => {
-      const userInfo = await dataSource.getRepository(UserEntity).save({ email: 'iu_best@example.com', nickname: '아이유 최고' });
-      userIdSet.add(userInfo.userId);
+        app = await createTestingApp();
 
-      userSocialInfo = await dataSource.getRepository(UserSocialEntity).save({ socialType: SOCIAL_TYPE.GOOGLE, socialKey: 'lovely_iu' });
+        dataSource = app.get(DataSource);
     });
 
-    it('회원 가입 실패 - 사용중인 닉네임', async () => {
-      const nickname = '아이유 최고';
+    describe('POST /api/users/by-social', () => {
+        let userSocialInfo: UserSocialEntity;
 
-      const res = await request(app.getHttpServer()).post('/api/users/by-social').send({ userSocialId: userSocialInfo.userSocialId, nickname });
+        beforeAll(async () => {
+            const userInfo = await dataSource.getRepository(UserEntity).save({ email: 'iu_best@example.com', nickname: '아이유 최고' });
+            userIdSet.add(userInfo.userId);
 
-      expect(res.body.message).toBeDefined();
-      expect(res.statusCode).toEqual(HttpStatus.BAD_REQUEST);
-    });
+            userSocialInfo = await dataSource.getRepository(UserSocialEntity).save({ socialType: SOCIAL_TYPE.GOOGLE, socialKey: 'lovely_iu' });
+        });
 
-    it('회원 가입 (소셜)', async () => {
-      const nickname = '러블리 아이유';
+        it('회원 가입 실패 - 사용중인 닉네임', async () => {
+            const nickname = '아이유 최고';
 
-      const res = await request(app.getHttpServer()).post('/api/users/by-social').send({ userSocialId: userSocialInfo.userSocialId, nickname });
+            const res = await request(app.getHttpServer()).post('/api/users/by-social').send({ userSocialId: userSocialInfo.userSocialId, nickname });
 
-      expect(res.body.message).not.toBeDefined();
-      expect(res.statusCode).toEqual(HttpStatus.CREATED);
+            expect(res.body.message).toBeDefined();
+            expect(res.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+        });
 
-      const userSocialInfoAfter = await dataSource.getRepository(UserSocialEntity).findOneBy({ userSocialId: userSocialInfo.userSocialId });
+        it('회원 가입 (소셜)', async () => {
+            const nickname = '러블리 아이유';
 
-      expect(userSocialInfoAfter.userId).toBeDefined();
-      expect(userSocialInfoAfter.userId).toBeGreaterThan(0);
+            const res = await request(app.getHttpServer()).post('/api/users/by-social').send({ userSocialId: userSocialInfo.userSocialId, nickname });
 
-      userIdSet.add(userSocialInfoAfter.userId);
+            expect(res.body.message).not.toBeDefined();
+            expect(res.statusCode).toEqual(HttpStatus.CREATED);
 
-      const userInfo = await dataSource.getRepository(UserEntity).findOneBy({ userId: userSocialInfoAfter.userId });
+            const userSocialInfoAfter = await dataSource.getRepository(UserSocialEntity).findOneBy({ userSocialId: userSocialInfo.userSocialId });
 
-      expect(userInfo).toBeDefined();
-      expect(userInfo.nickname).toEqual(nickname);
-    });
+            expect(userSocialInfoAfter.userId).toBeDefined();
+            expect(userSocialInfoAfter.userId).toBeGreaterThan(0);
 
-    it('회원 가입 실패 - 이미 가입된 유저', async () => {
-      const nickname = '다른 아이유';
+            userIdSet.add(userSocialInfoAfter.userId);
 
-      const res = await request(app.getHttpServer()).post('/api/users/by-social').send({ userSocialId: userSocialInfo.userSocialId, nickname });
+            const userInfo = await dataSource.getRepository(UserEntity).findOneBy({ userId: userSocialInfoAfter.userId });
 
-      expect(res.body.message).toBeDefined();
-      expect(res.statusCode).toEqual(HttpStatus.FORBIDDEN);
+            expect(userInfo).toBeDefined();
+            expect(userInfo.nickname).toEqual(nickname);
+        });
+
+        it('회원 가입 실패 - 이미 가입된 유저', async () => {
+            const nickname = '다른 아이유';
+
+            const res = await request(app.getHttpServer()).post('/api/users/by-social').send({ userSocialId: userSocialInfo.userSocialId, nickname });
+
+            expect(res.body.message).toBeDefined();
+            expect(res.statusCode).toEqual(HttpStatus.FORBIDDEN);
+        });
+
+        afterAll(async () => {
+            await dataSource.getRepository(UserSocialEntity).delete({ userSocialId: userSocialInfo.userSocialId });
+        });
     });
 
     afterAll(async () => {
-      await dataSource.getRepository(UserSocialEntity).delete({ userSocialId: userSocialInfo.userSocialId });
+        await dataSource.getRepository(UserEntity).delete({ userId: In([...userIdSet]) });
+
+        await app.close();
     });
-  });
-
-  afterAll(async () => {
-    await dataSource.getRepository(UserEntity).delete({ userId: In([...userIdSet]) });
-
-    await app.close();
-  });
 });

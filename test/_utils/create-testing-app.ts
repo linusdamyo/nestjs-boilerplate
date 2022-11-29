@@ -5,18 +5,18 @@ import { AllExceptionsFilter } from '../../src/_common/exception/all-exceptions.
 import { AppModule } from '../../src/app.module';
 
 export const createTestingApp = async () => {
-  const moduleFixture: TestingModule = await Test.createTestingModule({
-    imports: [AppModule],
-    providers: [{ provide: Logger, useValue: { error: process.env.LOGGING === 'true' ? console.log : jest.fn() } }],
-  }).compile();
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+        providers: [{ provide: Logger, useValue: { error: process.env.LOGGING === 'true' ? console.log : jest.fn() } }],
+    }).compile();
 
-  const app = moduleFixture.createNestApplication();
-  app.setGlobalPrefix('/api');
+    const app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('/api');
 
-  const httpAdapter = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter, app.get(Logger)));
+    const httpAdapter = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new AllExceptionsFilter(httpAdapter, app.get(Logger)));
 
-  await app.init();
+    await app.init();
 
-  return app;
+    return app;
 };
