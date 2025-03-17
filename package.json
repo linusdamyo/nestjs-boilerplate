@@ -13,11 +13,11 @@
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:cov": "jest --coverage",
-        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "jest --config ./test/jest-e2e.json"
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:cov": "vitest run --coverage",
+        "test:debug": "vitest --inspect-brk --inspect --logHeapUsage --threads=false",
+        "test:e2e": "vitest run --config ./vitest.config.e2e.ts"
     },
     "dependencies": {
         "@nestjs/common": "^11.0.1",
@@ -39,6 +39,7 @@
         "@types/jest": "^29.5.14",
         "@types/node": "^22.10.7",
         "@types/supertest": "^6.0.2",
+        "@vitest/coverage-v8": "^3.0.8",
         "eslint": "^9.18.0",
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-prettier": "^5.2.2",
@@ -52,7 +53,9 @@
         "ts-node": "^10.9.2",
         "tsconfig-paths": "^4.2.0",
         "typescript": "^5.7.3",
-        "typescript-eslint": "^8.20.0"
+        "typescript-eslint": "^8.20.0",
+        "unplugin-swc": "^1.5.1",
+        "vitest": "^3.0.8"
     },
     "jest": {
         "moduleFileExtensions": [
@@ -63,7 +66,9 @@
         "rootDir": "src",
         "testRegex": ".*\\.spec\\.ts$",
         "transform": {
-            "^.+\\.(t|j)s$": ["@swc/jest"]
+            "^.+\\.(t|j)s$": [
+                "@swc/jest"
+            ]
         },
         "collectCoverageFrom": [
             "**/*.(t|j)s"
