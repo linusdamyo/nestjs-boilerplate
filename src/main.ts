@@ -18,6 +18,9 @@ async function bootstrap() {
 
     app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true, disableErrorMessages: false }));
 
+    // @TODO: origin, header 설정 필요
+    app.enableCors();
+
     await app.listen(process.env.PORT ?? 8080);
 }
 bootstrap().catch(console.error);
