@@ -1,5 +1,6 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
+import { ValidationPipe } from '@nestjs/common';
 
 import { CatchEverythingFilter } from '@src/_common/catch-everything.filter';
 import { LoggingInterceptor } from '@src/_common/logging.interceptor';
@@ -14,6 +15,8 @@ async function bootstrap() {
 
     const httpAdapter = app.get(HttpAdapterHost);
     app.useGlobalFilters(new CatchEverythingFilter(httpAdapter));
+
+    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true, disableErrorMessages: false }));
 
     await app.listen(process.env.PORT ?? 8080);
 }
