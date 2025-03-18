@@ -12,7 +12,11 @@
             "legacyDecorator": true,
             "decoratorMetadata": true
         },
-        "baseUrl": "./"
+        "baseUrl": "./",
+        "paths": {
+            "@src/*": ["./src/*"],
+            "@test/*": ["./test/*"]
+        }
     },
     "minify": false
 }
