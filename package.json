@@ -11,7 +11,7 @@
         "start": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
-        "start:prod": "node dist/main",
+        "start:prod": "NODE_ENV=production node dist/main",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "vitest run",
         "test:watch": "vitest",
@@ -23,6 +23,9 @@
         "@nestjs/common": "^11.0.1",
         "@nestjs/core": "^11.0.1",
         "@nestjs/platform-express": "^11.0.1",
+        "nestjs-pino": "^4.3.1",
+        "pino-http": "^10.4.0",
+        "pino-pretty": "^13.0.0",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1"
     },
