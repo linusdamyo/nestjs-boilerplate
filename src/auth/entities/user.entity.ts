@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-import { USER_STATUS } from '@src/_common/enums/status.enum';
+import { USER_STATUS } from '@_common/enums/status.enum';
 
 @Entity('user')
 export class UserEntity {

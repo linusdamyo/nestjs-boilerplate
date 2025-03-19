@@ -3,10 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 
-import databaseConfig from '@src/_config/database.config';
-import { TypeOrmConfigService } from '@src/_common/typeorm-config.service';
-import { AuthModule } from './auth/auth.module';
-import { RootModule } from './root/root.module';
+import databaseConfig from '@_config/database.config';
+import { TypeOrmConfigService } from '@_common/typeorm-config.service';
+import { AuthModule } from '@auth/auth.module';
+import { RootModule } from '@root/root.module';
 
 @Module({
     imports: [
@@ -34,7 +34,7 @@ import { RootModule } from './root/root.module';
             },
         }),
         ConfigModule.forRoot({
-            envFilePath: `${__dirname}/_config/.env.${process.env.NODE_ENV}`,
+            envFilePath: `${__dirname}/../_config/.env.${process.env.NODE_ENV}`,
             isGlobal: true,
             cache: true,
             load: [databaseConfig],

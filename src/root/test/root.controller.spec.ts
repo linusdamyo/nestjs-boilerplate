@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from 'nestjs-pino';
 
-import { RootController } from '../root.controller';
-import { RootService } from '../root.service';
+import { RootController } from '@root/root.controller';
+import { RootService } from '@root/root.service';
 
 describe('RootController', () => {
     let rootController: RootController;

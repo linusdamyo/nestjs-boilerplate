@@ -14,7 +14,11 @@
         },
         "baseUrl": "./",
         "paths": {
-            "@src/*": ["./src/*"]
+            "@_common/*": ["./src/_common/*"],
+            "@_config/*": ["./src/_config/*"],
+            "@_app/*": ["./src/_app/*"],
+            "@auth/*": ["./src/auth/*"],
+            "@root/*": ["./src/root/*"]
         }
     },
     "minify": false
