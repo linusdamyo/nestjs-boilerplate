@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpException, Injectable, NestInterceptor } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -23,13 +23,23 @@ export class LoggingInterceptor implements NestInterceptor {
                     });
                 },
                 error: (error: Error) => {
-                    this.logger.error({
-                        msg: 'error occurred',
-                        method,
-                        url,
-                        body,
-                        error,
-                    });
+                    if (error instanceof HttpException) {
+                        this.logger.warn({
+                            msg: 'error occurred',
+                            method,
+                            url,
+                            body,
+                            error,
+                        });
+                    } else {
+                        this.logger.error({
+                            msg: 'error occurred',
+                            method,
+                            url,
+                            body,
+                            error: error.message,
+                        });
+                    }
                 },
             }),
         );
