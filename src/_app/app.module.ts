@@ -23,6 +23,8 @@ import { RootModule } from '@root/root.module';
                           }
                         : undefined,
                 customLogLevel(req, res, err) {
+                    if (process.env.NODE_ENV === 'test') return 'silent';
+
                     if (res.statusCode >= 400 && res.statusCode < 500) {
                         return 'warn';
                     } else if (res.statusCode >= 500 || err) {

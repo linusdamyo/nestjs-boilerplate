@@ -1,27 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
-import { CreateAuthDto } from '@auth/dto/create-auth.dto';
-import { UpdateAuthDto } from '@auth/dto/update-auth.dto';
+import { USER_STATUS } from '@_common/enums/status.enum';
+import { SignInRequestDto, SignInResponseDto } from '@auth/dto/sign-in.dto';
+import { AuthRepository } from '@auth/auth.repository';
 
 @Injectable()
 export class AuthService {
-    create(createAuthDto: CreateAuthDto) {
-        return 'This action adds a new auth';
-    }
+    constructor(
+        private readonly authRepository: AuthRepository,
+        private readonly jwtService: JwtService,
+    ) {}
 
-    findAll() {
-        return 'This action returns all auth';
-    }
+    async signIn({ username, password }: SignInRequestDto) {
+        const user = await this.authRepository.findUserByEmail(username);
+        if (!user) {
+            throw new BadRequestException('User not found.');
+        }
 
-    findOne(id: number) {
-        return `This action returns a #${id} auth`;
-    }
+        if (user.status !== USER_STATUS.NORMAL) {
+            throw new BadRequestException('User is not normal.');
+        }
 
-    update(id: number, updateAuthDto: UpdateAuthDto) {
-        return `This action updates a #${id} auth`;
-    }
+        // TODO: password hash
+        if (password !== user.password) {
+            throw new BadRequestException('Invalid password.');
+        }
 
-    remove(id: number) {
-        return `This action removes a #${id} auth`;
+        const accessToken = await this.jwtService.signAsync({ sub: user.id });
+
+        return new SignInResponseDto(accessToken);
     }
 }
