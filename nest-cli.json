@@ -5,6 +5,7 @@
     "compilerOptions": {
         "deleteOutDir": true,
         "builder": "swc",
-        "typeCheck": true
+        "typeCheck": true,
+        "assets": ["_config/.env*"]
     }
 }
