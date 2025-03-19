@@ -25,14 +25,17 @@
         "@nestjs/config": "^4.0.1",
         "@nestjs/core": "^11.0.11",
         "@nestjs/platform-express": "^11.0.11",
+        "@nestjs/typeorm": "^11.0.0",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.1",
         "joi": "^17.13.3",
         "nestjs-pino": "^4.3.1",
+        "pg": "^8.14.1",
         "pino-http": "^10.4.0",
         "pino-pretty": "^13.0.0",
         "reflect-metadata": "^0.2.2",
-        "rxjs": "^7.8.2"
+        "rxjs": "^7.8.2",
+        "typeorm": "^0.3.21"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.0",

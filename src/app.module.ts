@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 
+import databaseConfig from '@src/_config/database.config';
+import { TypeOrmConfigService } from '@src/_common/typeorm-config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -34,6 +37,10 @@ import { AppService } from './app.service';
             envFilePath: `${__dirname}/_config/.env.${process.env.NODE_ENV}`,
             isGlobal: true,
             cache: true,
+            load: [databaseConfig],
+        }),
+        TypeOrmModule.forRootAsync({
+            useClass: TypeOrmConfigService,
         }),
     ],
     controllers: [AppController],
