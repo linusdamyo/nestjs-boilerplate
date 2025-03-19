@@ -1,5 +1,4 @@
 import swc from 'unplugin-swc';
-import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -14,10 +13,4 @@ export default defineConfig({
             module: { type: 'es6' },
         }),
     ],
-    resolve: {
-        alias: {
-            // Ensure Vitest correctly resolves TypeScript path aliases
-            src: resolve(__dirname, './src'),
-        },
-    },
 });
