@@ -36,7 +36,7 @@ export default tseslint.config(
             '@typescript-eslint/no-unsafe-return': 'warn',
             'prettier/prettier': 'error',
             'object-shorthand': 'error',
-            'eqeqeq': 'error',
+            eqeqeq: 'error',
             quotes: ['error', 'single', { avoidEscape: true }],
         },
     },
