@@ -5,9 +5,8 @@ import { LoggerModule } from 'nestjs-pino';
 
 import databaseConfig from '@src/_config/database.config';
 import { TypeOrmConfigService } from '@src/_common/typeorm-config.service';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { RootModule } from './root/root.module';
 
 @Module({
     imports: [
@@ -44,8 +43,7 @@ import { AuthModule } from './auth/auth.module';
             useClass: TypeOrmConfigService,
         }),
         AuthModule,
+        RootModule,
     ],
-    controllers: [AppController],
-    providers: [AppService],
 })
 export class AppModule {}

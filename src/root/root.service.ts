@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 
 @Injectable()
-export class AppService {
+export class RootService {
     constructor(
-        @InjectPinoLogger(AppService.name)
+        @InjectPinoLogger(RootService.name)
         private readonly logger: PinoLogger,
     ) {}
 
