@@ -7,6 +7,7 @@ import databaseConfig from '@src/_config/database.config';
 import { TypeOrmConfigService } from '@src/_common/typeorm-config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -42,6 +43,7 @@ import { AppService } from './app.service';
         TypeOrmModule.forRootAsync({
             useClass: TypeOrmConfigService,
         }),
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [AppService],
