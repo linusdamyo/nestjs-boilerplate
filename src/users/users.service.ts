@@ -1,26 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+
+import { AuthUserType } from '@_common/types/auth.type';
+import { USER_STATUS } from '@_common/enums/status.enum';
+import { UsersRepository } from '@users/users.repository';
+import { GetMeResponseDto } from '@users/dto/get-me.dto';
 
 @Injectable()
 export class UsersService {
-    create(createUserDto: CreateUserDto) {
-        return 'This action adds a new user';
-    }
+    constructor(private readonly usersRepository: UsersRepository) {}
 
-    findAll() {
-        return `This action returns all users`;
-    }
+    async getMe({ userId }: AuthUserType) {
+        const user = await this.usersRepository.findUserById(userId);
+        if (!user) {
+            throw new BadRequestException('User not found.');
+        }
 
-    findOne(id: number) {
-        return `This action returns a #${id} user`;
-    }
+        if (user.status !== USER_STATUS.NORMAL) {
+            throw new BadRequestException('User is not normal.');
+        }
 
-    update(id: number, updateUserDto: UpdateUserDto) {
-        return `This action updates a #${id} user`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} user`;
+        return new GetMeResponseDto(user);
     }
 }

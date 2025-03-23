@@ -1,34 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 
-@Controller('users')
+import { JwtGuard } from '@_common/jwt/jwt.guard';
+import { AuthUser } from '@_common/decorators/auth-user.decorator';
+import { AuthUserType } from '@_common/types/auth.type';
+import { UsersService } from '@users/users.service';
+import { GetMeResponseDto } from '@users/dto/get-me.dto';
+
+@Controller('/users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-    @Post()
-    create(@Body() createUserDto: CreateUserDto) {
-        return this.usersService.create(createUserDto);
-    }
-
-    @Get()
-    findAll() {
-        return this.usersService.findAll();
-    }
-
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.usersService.findOne(+id);
-    }
-
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.usersService.update(+id, updateUserDto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.usersService.remove(+id);
+    @UseGuards(JwtGuard)
+    @Get('/me')
+    async getMe(@AuthUser() user: AuthUserType): Promise<GetMeResponseDto> {
+        return this.usersService.getMe(user);
     }
 }

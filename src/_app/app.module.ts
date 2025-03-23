@@ -8,6 +8,7 @@ import databaseConfig from '@_config/database.config';
 import { TypeOrmConfigService } from '@_common/typeorm-config.service';
 import { JwtStrategy } from '@_common/jwt/jwt.strategy';
 import { AuthModule } from '@auth/auth.module';
+import { UsersModule } from '@users/users.module';
 import { RootModule } from '@root/root.module';
 
 @Module({
@@ -48,6 +49,7 @@ import { RootModule } from '@root/root.module';
         }),
         PassportModule,
         AuthModule,
+        UsersModule,
         RootModule,
     ],
     providers: [JwtStrategy],

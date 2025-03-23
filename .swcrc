@@ -18,6 +18,7 @@
             "@_config/*": ["./src/_config/*"],
             "@_app/*": ["./src/_app/*"],
             "@auth/*": ["./src/auth/*"],
+            "@users/*": ["./src/users/*"],
             "@root/*": ["./src/root/*"]
         }
     },
