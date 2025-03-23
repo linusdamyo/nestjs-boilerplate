@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PassportModule } from '@nestjs/passport';
 import { LoggerModule } from 'nestjs-pino';
 
 import databaseConfig from '@_config/database.config';
 import { TypeOrmConfigService } from '@_common/typeorm-config.service';
+import { JwtStrategy } from '@_common/jwt/jwt.strategy';
 import { AuthModule } from '@auth/auth.module';
 import { RootModule } from '@root/root.module';
 
@@ -44,8 +46,10 @@ import { RootModule } from '@root/root.module';
         TypeOrmModule.forRootAsync({
             useClass: TypeOrmConfigService,
         }),
+        PassportModule,
         AuthModule,
         RootModule,
     ],
+    providers: [JwtStrategy],
 })
 export class AppModule {}
