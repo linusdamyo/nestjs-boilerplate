@@ -22,6 +22,8 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
             autoLoadEntities: true,
             synchronize: this.dbConfig.synchronize,
             logging: this.dbConfig.logging,
+            entities: [__dirname + '../../**/*.entity{.ts,.js}'],
+            poolSize: +this.dbConfig.poolSize,
         };
     }
 }

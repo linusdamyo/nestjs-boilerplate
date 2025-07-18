@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, IsNull, Not } from 'typeorm';
 
 import { AuthUserType } from '@_common/types/auth.type';
 import { USER_STATUS } from '@_common/enums/status.enum';
@@ -61,7 +61,7 @@ describe('UsersController', () => {
         });
 
         afterAll(async () => {
-            await dataSource.getRepository(UserEntity).delete({});
+            await dataSource.getRepository(UserEntity).delete({ id: Not(IsNull()) });
         });
 
         it('throw - User not found.', async () => {
@@ -89,5 +89,9 @@ describe('UsersController', () => {
 
             expect(result).toEqual(new GetMeResponseDto(normalUser));
         });
+    });
+
+    afterAll(async () => {
+        await dataSource.destroy();
     });
 });

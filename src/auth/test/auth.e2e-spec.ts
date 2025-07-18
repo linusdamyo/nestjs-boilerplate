@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { DataSource } from 'typeorm';
+import { DataSource, IsNull, Not } from 'typeorm';
 
 import { USER_STATUS } from '@_common/enums/status.enum';
 import { JwtPayloadType } from '@_common/types/auth.type';
@@ -32,7 +32,7 @@ describe('AuthController (e2e)', () => {
         await app.init();
     });
 
-    describe('signIn', () => {
+    describe('sign-in', () => {
         const userEmail = 'iu@email.com';
         const userPassword = 'valid-password';
 
@@ -45,12 +45,12 @@ describe('AuthController (e2e)', () => {
         });
 
         afterAll(async () => {
-            await dataSource.getRepository(UserEntity).delete({});
+            await dataSource.getRepository(UserEntity).delete({ id: Not(IsNull()) });
         });
 
-        it('POST /auth/signIn', () => {
+        it('POST /auth/sign-in', () => {
             return request(app.getHttpServer())
-                .post('/auth/signIn')
+                .post('/auth/sign-in')
                 .send({
                     username: userEmail,
                     password: userPassword,
